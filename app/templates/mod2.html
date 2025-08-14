@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Mod2 - Stil Kütüphanesi</title>
+<style>
+    body {
+        margin: 0;
+        padding: 40px;
+        background: url("{{ url_for('static', filename='img/mod2_background.png') }}") no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Segoe UI', sans-serif;
+        color: white;
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .slogan {
+        text-align: center;
+        font-size: 1.2rem;
+        font-style: italic;
+        color: #ddd;
+        margin-bottom: 2rem;
+    }
+
+    .container {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        max-width: 550px;
+        margin: auto;
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        text-align: center;
+        animation: fadeIn 0.6s ease-in-out;
+    }
+
+    label {
+        font-size: 1rem;
+        font-weight: bold;
+        display: block;
+        margin-top: 1rem;
+    }
+
+    input[type="file"], select {
+        margin: 0.8rem auto 1.5rem auto;
+        display: block;
+        background: #ffffff33;
+        padding: 0.5rem;
+        border-radius: 8px;
+        color: white;
+        width: 100%;
+        box-sizing: border-box;
+        border: none;
+        outline: none;
+        cursor: pointer;
+    }
+
+    select option {
+        color: black;
+    }
+
+    button {
+        padding: 0.7rem 2rem;
+        font-size: 1.1rem;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #ffdd55, #ff7744);
+        color: black;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+    }
+
+    button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(255,255,255,0.3);
+    }
+
+    #statusText {
+        text-align: center;
+        margin-top: 1rem;
+        font-weight: bold;
+    }
+
+    .result {
+        display: none;
+        text-align: center;
+        margin-top: 2rem;
+        animation: fadeIn 0.6s ease-in-out;
+    }
+
+    .result img {
+        max-width: 100%;
+        border: 4px solid white;
+        border-radius: 15px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+    }
+
+    a.download-link {
+        display: inline-block;
+        margin-top: 1rem;
+        padding: 0.5rem 1.2rem;
+        background: #ffffff;
+        color: rgb(0, 0, 0);
+        border-radius: 8px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+    a.download-link:hover {
+        background: white;
+    }
+
+    .back-button {
+        display: inline-block;
+        margin-top: 2rem;
+        padding: 0.6rem 1.4rem;
+        background: #ffffffcc;
+        color: black;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .back-button:hover {
+        background: white;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+</head>
+<body>
+
+    <h1>Gallery Gateway</h1>
+    <div class="slogan">"Hazır stillerden seçim yap, kendi dokunuşunu ekle"</div>
+
+    <div class="container">
+        <form id="mod2Form" enctype="multipart/form-data">
+            <label for="content">İçerik Görseli:</label>
+            <input type="file" name="content" id="content" accept="image/*" required>
+
+            <label for="artistSelect">Sanatçı Seç:</label>
+            <select id="artistSelect" name="artist" required>
+                <option value="">Sanatçı Seç</option>
+                {% for artist in artists %}
+                <option value="{{ artist }}">{{ artist }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="styleSelect">Eser Seç (Stil):</label>
+            <select id="styleSelect" name="style" required>
+                <option value="">Önce sanatçı seç</option>
+            </select>
+
+            <button type="submit">🎨 Stil Aktar</button>
+        </form>
+
+        <p id="statusText"></p>
+
+        <div class="result" id="outputSection">
+            <h3>Eseriniz:</h3>
+            <img id="outputImage" src="" alt="Sonuç Görseli">
+            <br>
+            <a id="downloadLink" class="download-link" href="#" download>İndir</a>
+        </div>
+
+        <a href="{{ url_for('index') }}" class="back-button">← Ana Sayfaya Dön</a>
+    </div>
+
+<script>
+    const artistSelect = document.getElementById('artistSelect');
+    const styleSelect = document.getElementById('styleSelect');
+    const form = document.getElementById('mod2Form');
+    const statusText = document.getElementById('statusText');
+    const outputSection = document.getElementById('outputSection');
+    const outputImage = document.getElementById('outputImage');
+    const downloadLink = document.getElementById('downloadLink');
+
+    artistSelect.addEventListener('change', () => {
+        const artist = artistSelect.value;
+        if (!artist) {
+            styleSelect.innerHTML = '<option value="">Önce sanatçı seç</option>';
+            return;
+        }
+        statusText.textContent = 'Stil eserleri yükleniyor...';
+        fetch(`/get_styles/${encodeURIComponent(artist)}`)
+            .then(res => res.json())
+            .then(styles => {
+                styleSelect.innerHTML = '<option value="">Eser Seç</option>';
+                styles.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s;
+                    opt.textContent = s;
+                    styleSelect.appendChild(opt);
+                });
+                statusText.textContent = '';
+            })
+            .catch(err => {
+                console.error(err);
+                statusText.textContent = 'Eserler yüklenirken hata oldu.';
+            });
+    });
+
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        statusText.textContent = 'İşleniyor... Lütfen bekleyin. ⏳';
+        outputSection.style.display = 'none';
+        const frm = new FormData(form);
+        fetch('/mod2/style-transfer', {
+            method: 'POST',
+            body: frm
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                statusText.textContent = data.error;
+                return;
+            }
+            const url = data.output_image;
+            outputImage.src = url;
+            downloadLink.href = url;
+            outputSection.style.display = 'block';
+            statusText.textContent = 'Stil aktarımı tamamlandı!';
+        })
+        .catch(err => {
+            console.error(err);
+            statusText.textContent = 'İşlem başarısız oldu!';
+        });
+    });
+</script>
+
+</body>
+</html>

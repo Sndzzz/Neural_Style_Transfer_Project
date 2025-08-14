@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Mod3 - Video Stil Aktarımı</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: url("{{ url_for('static', filename='img/mod3_background.png') }}") no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        color: white;
+        text-align: center;
+    }
+
+    /* Fade-in ve yukarıdan süzülme animasyonu */
+    @keyframes fadeInUp {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .container {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .slogan {
+        text-align: center;
+        font-size: 1.2rem;
+        font-style: italic;
+        color: #ddd;
+        margin-bottom: 2rem;
+    }
+
+    label {
+        text-align: left;
+        display: block;
+        margin-top: 1rem;
+        font-weight: bold;
+    }
+
+    input[type="file"], select {
+        padding: 0.8rem;
+        background: #ffffff33;
+        border-radius: 10px;
+        border: none;
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 0.3rem;
+        color: #000;
+    }
+
+    button {
+        padding: 0.9rem;
+        font-size: 1.1rem;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #ffdd55, #ff7744);
+        cursor: pointer;
+        font-weight: bold;
+        color: #000;
+        margin-top: 1rem;
+        width: 100%;
+        transition: all 0.2s ease;
+    }
+
+    button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(255,255,255,0.3);
+    }
+
+    .back-button {
+        margin-top: 1.5rem;
+        display: inline-block;
+        padding: 0.6rem 1.4rem;
+        background: rgba(255,255,255,0.85);
+        color: black;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: all 0.2s ease;
+    }
+
+    .back-button:hover {
+        background: #fff;
+        transform: scale(1.05);
+    }
+
+    #style-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 0.5rem;
+    }
+
+    .style-item {
+        background: rgba(255,255,255,0.12);
+        padding: 10px;
+        border-radius: 12px;
+        border: 2px solid white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        width: 160px;
+        text-align: center;
+    }
+
+    .style-item:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px gold;
+    }
+
+    .style-item img {
+        width: 100%;
+        border-radius: 8px;
+        display: block;
+    }
+
+    .style-item p {
+        margin-top: 0.5rem;
+        font-weight: bold;
+        color: white;
+    }
+
+    .selected {
+        border: 3px solid gold !important;
+        box-shadow: 0 0 20px gold;
+    }
+
+    #output-container {
+        margin-top: 2rem;
+    }
+
+    video {
+        max-width: 100%;
+        border: 3px solid #fff;
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(255,255,255,0.4);
+    }
+
+    .download-link {
+        display: inline-block;
+        margin-top: .8rem;
+        padding: .6rem 1rem;
+        background: #ffffffcc;
+        color: rgb(0, 0, 0);
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: all 0.2s ease;
+    }
+
+    .download-link:hover {
+        background: white;
+        transform: scale(1.05);
+    }
+
+    #loading {
+        font-weight: bold;
+        margin-top: 1rem;
+        color: gold;
+    }
+</style>
+</head>
+<body>
+    <h1>Motion Brush</h1>
+    <div class="slogan">"Sanatı harekete geçir."</div>
+
+    <div class="container">
+        <form id="mod3-form" enctype="multipart/form-data">
+            <label for="video">Video Yükle:</label>
+            <input type="file" name="video" id="video" accept="video/*" required>
+
+            <label>Stil Modeli Seç:</label>
+            <div id="style-options">
+                <div class="style-item" data-file="candy.pth">
+                    <img src="{{ url_for('static', filename='style_previews/candy.png') }}" alt="Candy">
+                    <p>Candy</p>
+                </div>
+                <div class="style-item" data-file="mosaic.pth">
+                    <img src="{{ url_for('static', filename='style_previews/mosaic.png') }}" alt="Mosaic">
+                    <p>Mosaic</p>
+                </div>
+                <div class="style-item" data-file="rain_princess.pth">
+                    <img src="{{ url_for('static', filename='style_previews/rain_princess.png') }}" alt="Rain Princess">
+                    <p>Rain Princess</p>
+                </div>
+                <div class="style-item" data-file="udnie.pth">
+                    <img src="{{ url_for('static', filename='style_previews/udnie.png') }}" alt="Udnie">
+                    <p>Udnie</p>
+                </div>
+            </div>
+            <input type="hidden" name="model_name" id="model_name" required>
+
+            <button type="submit">🎨 Stil Aktar</button>
+        </form>
+
+        <div id="loading" style="display:none;"> İşleniyor... Lütfen bekleyin. ⏳</div>
+
+        <div id="output-container" style="display:none;">
+            <h3>Eseriniz:</h3>
+            <video id="output-video" controls></video><br>
+            <a id="download-link" class="download-link" href="" download>İndir</a>
+        </div>
+
+        <div>
+            <a href="{{ url_for('index') }}" class="back-button">← Ana Sayfaya Dön</a>
+        </div>
+    </div>
+
+<script>
+    document.getElementById('mod3-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const form = this;
+        const loading = document.getElementById('loading');
+        const outputContainer = document.getElementById('output-container');
+        const outputVideo = document.getElementById('output-video');
+        const downloadLink = document.getElementById('download-link');
+
+        loading.style.display = 'block';
+        outputContainer.style.display = 'none';
+
+        const formData = new FormData(form);
+
+        try {
+            const resp = await fetch('/mod3/style-transfer', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!resp.ok) throw new Error('Sunucudan geçersiz cevap alındı.');
+            const data = await resp.json();
+
+            if (data.error) {
+                alert('Hata: ' + data.error);
+            } else {
+                outputVideo.src = data.output_video;
+                downloadLink.href = data.output_video;
+                outputContainer.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('İşlem sırasında bir hata oluştu:', error);
+            alert('İşlem başarısız oldu. Lütfen tekrar deneyin.');
+        } finally {
+            loading.style.display = 'none';
+        }
+    });
+
+    const styleItems = document.querySelectorAll('.style-item');
+    const modelInput = document.getElementById('model_name');
+
+    styleItems.forEach(item => {
+        item.addEventListener('click', function () {
+            styleItems.forEach(i => i.classList.remove('selected'));
+            this.classList.add('selected');
+            modelInput.value = this.getAttribute('data-file');
+        });
+    });
+</script>
+</body>
+</html>

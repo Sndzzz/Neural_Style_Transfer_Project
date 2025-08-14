@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Neural Style Transfer</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: url("{{ url_for('static', filename='img/background.png') }}") no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Segoe UI', sans-serif;
+            color: white;
+            text-align: center;
+        }
+
+        .overlay {
+            background-color: rgba(0, 0, 0, 0.6);
+            min-height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Mod kartları */
+        .mod-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .mod-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+            transition: transform .18s ease, box-shadow .18s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .mod-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 26px rgba(0,0,0,0.3);
+            background: rgba(255,255,255,0.15);
+        }
+
+        .mod-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .mod-title {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .mod-tagline {
+            margin-top: 0.5rem;
+            font-size: 1rem;
+            color: #ddd;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .note {
+            margin-top: 2rem;
+            font-size: 0.95rem;
+            font-style: italic;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay">
+        <h1>Modunuzu Seçin</h1>
+
+        <div class="mod-grid">
+            <!-- Mod 1 -->
+            <a href="{{ url_for('mod1') }}">
+                <div class="mod-card" title="Fotoğrafını ve favori stili birleştir — kişiselleştirilmiş sanat eserleri.">
+                    <div class="mod-icon">🎨</div>
+                    <h3 class="mod-title">Canvas Fusion</h3>
+                    <p class="mod-tagline">İçerik ve stil — iki görüntü, tek şaheser.</p>
+                </div>
+            </a>
+
+            <!-- Mod 2 -->
+            <a href="{{ url_for('mod2') }}">
+                <div class="mod-card" title="Kütüphaneden bir sanatçı ve eser seç — otomatik stil eşleştirme.">
+                    <div class="mod-icon">🖼️</div>
+                    <h3 class="mod-title">Gallery Gateway</h3>
+                    <p class="mod-tagline">Sanatçıların gözünden dünyanıza yeni bir bakış!</p>
+                </div>
+            </a>
+
+            <!-- Mod 3 -->
+            <a href="{{ url_for('mod3') }}">
+                <div class="mod-card" title="Videonu seç, modelini seç — harekette sanat.">
+                    <div class="mod-icon">🎥</div>
+                    <h3 class="mod-title">Motion Brush</h3>
+                    <p class="mod-tagline">Videonuza sinematik bir fırça darbesi.</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="note">
+            <p>Her mod farklı bir deneyim sunar: <br>
+            <strong>Canvas Fusion:</strong> İçerik ve stil görsellerini sen seç.<br>
+            <strong>Gallery Gateway:</strong> Sadece içerik yükle, stili kütüphaneden seç.<br>
+            <strong>Motion Brush:</strong> Videonu sanatla buluştur.</p>
+        </div>
+    </div>
+</body>
+</html>

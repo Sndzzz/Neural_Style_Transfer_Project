@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Mod1 - Canvas Fusion</title>
+<style>
+    body {
+        margin: 0;
+        padding: 40px;
+        background: url("{{ url_for('static', filename='img/mod1_background.png') }}") no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Segoe UI', sans-serif;
+        color: white;
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .slogan {
+        text-align: center;
+        font-size: 1.2rem;
+        font-style: italic;
+        color: #ddd;
+        margin-bottom: 2rem;
+    }
+
+    .container {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        max-width: 550px;
+        margin: auto;
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        text-align: center;
+        animation: fadeIn 0.6s ease-in-out;
+    }
+
+    label {
+        font-size: 1rem;
+        font-weight: bold;
+        display: block;
+        margin-top: 1rem;
+    }
+
+    input[type="file"] {
+        margin: 0.8rem auto 1.5rem auto;
+        display: block;
+        background: #ffffff33;
+        padding: 0.5rem;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+    }
+
+    button {
+        padding: 0.7rem 2rem;
+        font-size: 1.1rem;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #ffdd55, #ff7744);
+        color: black;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+    }
+
+    button:hover {
+       transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(255,255,255,0.3);
+    }
+
+    #status {
+        text-align: center;
+        margin-top: 1rem;
+        font-weight: bold;
+    }
+
+    #result-section {
+        display: none;
+        text-align: center;
+        margin-top: 2rem;
+        animation: fadeIn 0.6s ease-in-out;
+    }
+
+    #output-image {
+        max-width: 100%;
+        border: 4px solid white;
+        border-radius: 15px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+    }
+
+    #download-link {
+        display: inline-block;
+        margin-top: 1rem;
+        padding: 0.5rem 1.2rem;
+        background: #ffffffaa;
+        color: black;
+        border-radius: 8px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+    #download-link:hover {
+        background: white;
+    }
+
+    .back-button {
+        display: inline-block;
+        margin-top: 2rem;
+        padding: 0.6rem 1.4rem;
+        background: #ffffffcc;
+        color: black;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .back-button:hover {
+        background: white;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+</head>
+<body>
+
+    <h1>Canvas Fusion</h1>
+    <div class="slogan">"İki farklı dünyanın dokusunu tek karede buluştur."</div>
+
+    <div class="container">
+        <form id="styleForm" enctype="multipart/form-data">
+            <label>İçerik Görseli:</label>
+            <input type="file" name="content_image" accept="image/*" required>
+            <label>Stil Görseli:</label>
+            <input type="file" name="style_image" accept="image/*" required>
+            <button type="submit">🎨 Stil Aktar</button>
+        </form>
+
+        <p id="status"></p>
+
+        <div id="result-section">
+            <h3>Eseriniz:</h3>
+            <img id="output-image" src="" alt="Çıktı">
+            <br>
+            <a id="download-link" href="#" download>İndir</a>
+        </div>
+
+        <div style="text-align:center;">
+            <a href="{{ url_for('index') }}" class="back-button">← Ana Sayfaya Dön</a>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('styleForm');
+        const statusEl = document.getElementById('status');
+        const resultSec = document.getElementById('result-section');
+        const imgEl = document.getElementById('output-image');
+        const dlLink = document.getElementById('download-link');
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            statusEl.textContent = 'İşleniyor... Lütfen bekleyin. ⏳';
+            const btn = form.querySelector('button'); 
+            btn.disabled = true;
+
+            fetch('/mod1/style_transfer', { 
+                method:'POST', 
+                body:new FormData(form) 
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) throw data.error;
+                imgEl.src = data.output_path;
+                dlLink.href = data.output_path;
+                resultSec.style.display = 'block';
+                statusEl.textContent = 'Stil aktarımı tamamlandı!';
+            })
+            .catch(err => { 
+                console.error(err); 
+                statusEl.textContent='İşlem başarısız oldu...'; 
+            })
+            .finally(() => btn.disabled = false);
+        });
+    </script>
+
+</body>
+</html>

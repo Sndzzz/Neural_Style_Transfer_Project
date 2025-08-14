@@ -1,0 +1,10 @@
+# models/fast_nst.py
+
+import cv2
+import numpy as np
+
+def apply_fast_style_transfer(frame):
+    # Bu geçici demo: Görüntüyü grayscale yaparak "stil verildi" gibi davranıyor
+    stylized = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+    stylized = cv2.cvtColor(stylized, cv2.COLOR_GRAY2RGB)
+    return stylized
